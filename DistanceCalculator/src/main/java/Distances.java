@@ -25,7 +25,7 @@ import com.google.gson.GsonBuilder;
 
 public class Distances {
 
-    private static GeoApiContext context = new GeoApiContext.Builder().apiKey("AIzaSyAJ5NdMn2SZYo1gD2AXeny5nVQi3PUQC6k").build();
+    private static GeoApiContext context = new GeoApiContext.Builder().apiKey("Api key").build();
     private String[] excelData;
 
     /**
@@ -37,7 +37,7 @@ public class Distances {
     private String[] returnTownsCities() {
         try {
 
-            FileInputStream fileIn = new FileInputStream("C:\\Users\\Ellmo-PC\\Documents\\test_three.xls");
+            FileInputStream fileIn = new FileInputStream("PATH\TO\FILE\test_three.xls");
             NPOIFSFileSystem fs = new NPOIFSFileSystem(fileIn);
             HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
             HSSFSheet sheet = wb.getSheetAt(0);
