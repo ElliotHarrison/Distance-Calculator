@@ -23,53 +23,55 @@ import com.google.gson.GsonBuilder;
  * via the DistanceMatrixApi and returns a JSON Object through a GSON object to be parsed and formatted into a String.
  */
 
-public class Distances {
+public class Distances 
+{
 
-    private static GeoApiContext context = new GeoApiContext.Builder().apiKey("Api key").build();
-    private String[] excelData;
+  private static GeoApiContext context = new GeoApiContext.Builder().apiKey("Api key").build();
+  private String[] excelData;
 
-    /**
-     * Method returnTownsCities creates an File stream input of the excel data file
-     * stores the data in a NPOI file system and HSSF workbook/sheet, the HSSF class row
-     * is used in iterating through the rows of the table, the first column is iterated through retrieved
-     * and returned as @return String[] excelData.
-     */
-    private String[] returnTownsCities() {
-        try {
+  /**
+   * Method returnTownsCities creates an File stream input of the excel data file
+   * stores the data in a NPOI file system and HSSF workbook/sheet, the HSSF class row
+   * is used in iterating through the rows of the table, the first column is iterated through retrieved
+   * and returned as @return String[] excelData.
+   */
+  private String[] returnTownsCities() {
+        
+    try {
 
-            FileInputStream fileIn = new FileInputStream("PATH\TO\FILE\test_three.xls");
-            NPOIFSFileSystem fs = new NPOIFSFileSystem(fileIn);
-            HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
-            HSSFSheet sheet = wb.getSheetAt(0);
-            HSSFRow row;
+        FileInputStream fileIn = new FileInputStream("PATH\TO\FILE\test_three.xls");
+        NPOIFSFileSystem fs = new NPOIFSFileSystem(fileIn);
+        HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
+        HSSFSheet sheet = wb.getSheetAt(0);
+        HSSFRow row;
 
-            int rows;
-            rows = sheet.getPhysicalNumberOfRows();
-            int cols = 0;
-            int tmp = 0;
+        int rows;
+        rows = sheet.getPhysicalNumberOfRows();
+        int cols = 0;
+        int tmp = 0;
 
-            for (int i = 0; i < 10 || i < rows; i++) {
-                row = sheet.getRow(i);
-                if (row != null) {
-                    tmp = sheet.getRow(i).getPhysicalNumberOfCells();
-                    if (tmp > cols) cols = tmp; {
-                    }
-                }
+        for (int i = 0; i < 10 || i < rows; i++) {
+          row = sheet.getRow(i);
+          if (row != null) {
+            tmp = sheet.getRow(i).getPhysicalNumberOfCells();
+            if (tmp > cols) cols = tmp; {
             }
-            excelData = new String[sheet.getLastRowNum()];
-            for (int j = 0; j < sheet.getLastRowNum(); j++) {
-                row = sheet.getRow(j);
-                Cell cel = row.getCell(0);
-                String o = cel.getStringCellValue();
-                excelData[j] = o;
+          }
+        }
+            
+        excelData = new String[sheet.getLastRowNum()];
+        for (int j = 0; j < sheet.getLastRowNum(); j++) {
+          row = sheet.getRow(j);
+          Cell celRow = row.getCell(0);
+          String celVal = cel.getStringCellValue();
+          excelData[j] = celVal;
 
-            }
+        }
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } return excelData;
+          System.out.println(e.getMessage());
+      } return excelData;
     }
-
 
     /**
      * Main Method initializes an object instance of the Distances class.
@@ -81,46 +83,46 @@ public class Distances {
      * @param args
      */
     public static void main(String[] args) {
-        try {
+          
+      try {
 
-            Distances e = new Distances();
-            String[] extractString = e.returnTownsCities();
+          Distances distObject = new Distances();
+          String[] extractString = distObject.returnTownsCities();
 
-            String originA = extractString[new Random().nextInt(extractString.length)];
-            String destinationA = extractString[new Random().nextInt(extractString.length)];
+          String originA = extractString[new Random().nextInt(extractString.length)];
+          String destinationA = extractString[new Random().nextInt(extractString.length)];
 
-            DistanceMatrix matrix =
-                    DistanceMatrixApi.newRequest(context)
-                            .origins(originA)
-                            .destinations(destinationA)
-                            .mode(TravelMode.WALKING)
-                            .language("en-AU")
-                            .avoid(DirectionsApi.RouteRestriction.TOLLS)
-                            .units(Unit.METRIC)
-                            .departureTime(
-                                    new DateTime().plusMinutes(2)) // this is ignored when an API key is used
-                            .await();
+          DistanceMatrix matrix =
+                  DistanceMatrixApi.newRequest(context)
+                          .origins(originA)
+                          .destinations(destinationA)
+                          .mode(TravelMode.WALKING)
+                          .language("en-AU")
+                          .avoid(DirectionsApi.RouteRestriction.TOLLS)
+                          .units(Unit.METRIC)
+                          .departureTime(
+                                  new DateTime().plusMinutes(2))
+                          .await();
 
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            String jsonInString = gson.toJson(matrix);
-            System.out.println(jsonInString);
+          Gson gson = new GsonBuilder().setPrettyPrinting().create();
+          String jsonInString = gson.toJson(matrix);
+          System.out.println(jsonInString);
 
-            JSONObject jsonObject = new JSONObject(jsonInString = gson.toJson(matrix));
-            JSONArray rows = jsonObject.getJSONArray("rows");
+          JSONObject jsonObject = new JSONObject(jsonInString = gson.toJson(matrix));
+          JSONArray rows = jsonObject.getJSONArray("rows");
 
-            for(int i = 0; i < rows.length(); i++){
-                JSONObject one = rows.getJSONObject(i);
-                JSONArray element = one.getJSONArray("elements");
-                for(int j = 0; j < element.length(); j++){
-                    JSONObject duration = element.getJSONObject(j).getJSONObject("duration");
-                    JSONObject distance = element.getJSONObject(j).getJSONObject("distance");
-                    System.out.println("It will take " + duration.getString("humanReadable") + " to walk from " + originA + " to " + destinationA);
-                }
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+          for(int i = 0; i < rows.length(); i++) {
+            JSONObject one = rows.getJSONObject(i);
+            JSONArray element = one.getJSONArray("elements");
+            for(int j = 0; j < element.length(); j++) {
+              JSONObject duration = element.getJSONObject(j).getJSONObject("duration");
+              JSONObject distance = element.getJSONObject(j).getJSONObject("distance");
+              System.out.println("It will take " + duration.getString("humanReadable") + " to walk from " + originA + " to " + destinationA);
+          }
         }
 
+      } catch (Exception e) {
+          System.out.println(e.getMessage());
     }
-}
+  }   
+}   
